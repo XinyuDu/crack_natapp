@@ -16,7 +16,7 @@ GPU：GeForce GTX 1060 6GB
 
 [NATAPP](https://natapp.cn/)是基于ngrok的国内高速内网穿透服务。NATAPP提供免费隧道，用来做微信公众号的后台很好。NATAPP运行效果如下图所示。蓝色下划线标注部分为外网地址，红色下划线标注部分为随机生成的6个字符。随机分配的字符（红色下划线部分），每隔大约48小时就改变一次。所以用的时候总得盯着它改变，变了以后得及时在微信公众号后台更新地址。
 
-![natapp](/home/glacier/Baiduyun/githubProjects/crack_natapp.git/images/natapp.png)
+![natapp](images/natapp.png)
 
 因此，想到了将窗口截图，然后利用卷积神经网络进行字符识别。当监控到地址改变后再利用python模拟登录微信公众号的后台更新地址。这样除了识别字符出现错误，基本就不用操心了。本项目只包括CNN识别地址的部分，模拟登陆微信后台部分不包括。
 
