@@ -18,7 +18,7 @@ GPU：GeForce GTX 1060 6GB
 
 ![natapp](images/natapp.png)
 
-<center>*图1. NATAPP窗口*</center>
+*<center>图1. NATAPP窗口</center>*
 
 因此，想到了将窗口截图，然后利用卷积神经网络进行字符识别。当监控到地址改变后再利用python模拟登录微信公众号的后台更新地址。这样除了识别字符出现错误，基本就不用操心了。本项目只包括CNN识别地址的部分，模拟登陆微信后台部分不包括。
 
@@ -42,7 +42,7 @@ MONACO.TTF：monaco字体文件。
 
 ![structure](images/structure.png)
 
-<center>*图2. 多层CNN结构图*</center>
+*<center>图2. 多层CNN结构图</center>*
 
 # 训练模型
 
