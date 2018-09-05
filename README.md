@@ -18,6 +18,8 @@ GPU：GeForce GTX 1060 6GB
 
 ![natapp](images/natapp.png)
 
+<center>*图1. NATAPP窗口*</center>
+
 因此，想到了将窗口截图，然后利用卷积神经网络进行字符识别。当监控到地址改变后再利用python模拟登录微信公众号的后台更新地址。这样除了识别字符出现错误，基本就不用操心了。本项目只包括CNN识别地址的部分，模拟登陆微信后台部分不包括。
 
 # 文件结构
@@ -40,6 +42,81 @@ MONACO.TTF：monaco字体文件。
 
 ![structure](images/structure.png)
 
+<center>*图2. 多层CNN结构图*</center>
+
 # 训练模型
 
-训练数据集为的60000个图片，测试数据为10000个图片，损失函数选择交叉熵损失函数。随机梯度下降batch大小为1000。每10个epochs判断一下识别精度，当训练数据精度达到99.5%以上并且测试数据达到99.9%以上后停止训练。在我的系统上训练大约持续了1小时左右。
+训练数据集为的60000个图片，测试数据为10000个图片，损失函数选择交叉熵损失函数。随机梯度下降batch大小为1000。每10个epochs判断一下识别精度，当训练数据精度达到99.5%以上并且在测试数据上的精度达到99.9%以上后停止训练。在我的系统上训练大约持续了1小时左右。
+
+# 应用模型
+
+截取窗口图片，然后利用训练好的模型识别地址。截取窗口图片的代码windows和linux系统下不太一样，这里不赘述。主要思路是截图，将图片喂给模型，模型输出地址。代码如下：
+
+``` 
+# -*- coding: utf-8 -*-
+from keras import backend as K
+from keras.models import model_from_json 
+import numpy as np
+
+K.set_image_dim_ordering('tf')
+IMAGE_HEIGHT = 60
+IMAGE_WIDTH = 160
+
+def convert2gray(img):
+    if len(img.shape) > 2:
+        gray = np.mean(img, -1)
+        return gray
+    else:
+        return img
+
+def vec2text(vec):
+    char_pos = vec.nonzero()[0]
+    if char_pos.shape[0]!=6:
+        #print(vec)
+        #print(char_pos)
+        return '######'
+    text=[]
+    for i in range(MAX_link):
+        char_index = char_pos[i]-36*i
+        if char_index >36:
+            return '******'
+        else:
+            char = charlist[char_index]
+            text.append(char)
+    return "".join(text)
+
+def binoutput(vec):
+    bvec = np.zeros(MAX_link*CHAR_SET_LEN)
+    for m in range(MAX_link):
+        temp = vec[m*36:(m+1)*36]
+        maxindex = np.where(temp==temp.max())[0][0]
+        #print(maxindex)
+        bvec[maxindex+m*36] = 1
+    return bvec
+    
+def crack_link(link_image):
+    # load model
+    json_file = open('my_model_architecture.json', 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()  
+    model = model_from_json(loaded_model_json)
+    model.load_weights('my_model_weights.h5')
+
+    x = np.zeros([1, IMAGE_HEIGHT, IMAGE_WIDTH])
+    x[0,:] = link_image
+    x = x.reshape(x.shape[0], IMAGE_HEIGHT, IMAGE_WIDTH, 1).astype('float32')
+    x = x / 255
+
+    result = model.predict(x)
+    result = binoutput(result[0])
+    char_result = vec2text(result)
+    return char_result
+
+def getpic(title)
+	#这里是实现窗口截图的代码，参数title应为窗口名称
+	#注意截图只截取图1红色下划线标注部分
+
+im=getpic('window_name')
+address = 'http://'+crack_link(im)+'.natappfree.cc'
+```
+
